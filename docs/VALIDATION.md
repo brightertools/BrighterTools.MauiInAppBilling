@@ -13,14 +13,27 @@ This is implementation/build evidence, not production Store acceptance.
 | Android manifest | Final merged manifest contains com.android.vending.BILLING and Billing service queries; minimum API 23 |
 | Colour Picker integration | Windows build, portable tests and isolated fake-provider Pro UI checks passed; see the app's docs/VALIDATION.md |
 
-Toolchain: .NET SDK 10.0.303, MAUI Controls 10.0.101, installed Android 36.1.43 and Apple 26.5.10284 workloads. The CI bootstrap requests workload set 10.0.303.1; that exact clean CI environment has not run here.
+Toolchain: .NET SDK 10.0.303, MAUI Controls 10.0.101, installed Android 36.1.43 and Apple 26.5.10284 workloads. The CI bootstrap requests workload set 10.0.303.1; see the later public-repository validation below for CI results.
 
 ## Outstanding gates
 
-- Compile and link the Swift bridge on a Mac for all supported Apple RIDs, then run with trimming/AOT and signed StoreKit sandbox purchases.
+- Complete native bridge builds for all supported Apple RIDs beyond the unsigned Mac Catalyst arm64 CI build, then run with trimming/AOT and signed StoreKit sandbox purchases.
 - Real Windows Store package/product association, purchase/restore/refund/account/offline tests.
 - Real Play-distributed test purchase, pending delivery, signature verification and acknowledgement on Android devices.
 - Real Apple devices/Store test accounts and full app signing/distribution.
 - Clean CI run, NuGet ownership/trusted publishing and owner-approved release workflow.
 
 The public source repository is https://github.com/brightertools/BrighterTools.MauiInAppBilling. NuGet packages remain unpublished. These library checks do not certify real Store purchases.
+
+## Public repository validation — 23 September 2026
+
+- Portable billing tests: 12 passed in Release, none failed or skipped.
+- Local Windows and Android sample Release builds: succeeded with zero warnings/errors. Android includes trimming and AOT for the default runtime set.
+- Local iOS and Mac Catalyst managed Compile targets: succeeded with zero warnings/errors.
+- Both preview NuGet packages and symbol packages were rebuilt. Automated verification passed for MIT/repository metadata, all four platform assemblies, portable assembly, native Swift/build sources and documentation.
+- Public source, contribution templates, usage guidance and artifact-only CI are available on main. No NuGet packages were published.
+- GitHub Windows CI passed tests, Windows/Android builds and package verification on the initial public commit.
+- The Mac Catalyst arm64 Release sample built successfully with zero warnings/errors on the macOS runner, including the Swift native bridge and trimming. This is an unsigned build check, not a device or Store purchase test.
+- CI revealed and corrected a global target-framework override that broke portable project restore, then an empty-array incompatibility with macOS Bash in the iOS bridge build script. See [GitHub Actions](https://github.com/brightertools/BrighterTools.MauiInAppBilling/actions) for the latest full run.
+
+Local checks used the installed workload versions listed above. GitHub installs the pinned workload set 10.0.303.1; package target-platform SDK suffixes can differ from the older local Apple workload. Use the pinned bootstrap for release packages. Real purchases, signed distribution, other Apple architectures and hardware interaction remain release gates.

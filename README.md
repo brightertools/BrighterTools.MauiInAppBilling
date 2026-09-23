@@ -5,7 +5,7 @@
 
 Permanent in-app upgrades for .NET 10 / MAUI 10: Microsoft Store, App Store on iOS and Mac Catalyst, and Google Play.
 
-**Preview implementation.** Windows and Android managed adapters compile; the shared transaction coordinator has automated tests. Apple uses an owned Swift StoreKit 2 bridge, built from source on a Mac. Real Store purchases, native Apple linkage and device acceptance must pass before a production NuGet release. NuGet packages have not been published.
+**Preview implementation.** Windows and Android managed adapters compile; the shared transaction coordinator has automated tests. Apple uses an owned Swift StoreKit 2 bridge, built from source on a Mac. Real Store purchases, remaining Apple build/signing checks and device acceptance must pass before a production NuGet release. NuGet packages have not been published.
 
 ## Scope
 
@@ -24,7 +24,8 @@ Package layout: `BrighterTools.MauiInAppBilling.Abstractions` contains portable 
 |---|---|---|
 | Windows | Microsoft Store durable add-ons | Managed adapter and sample build; integrated into Colour Picker |
 | Android | Google Play Billing | Managed adapter and sample build; real Play testing outstanding |
-| iOS / Mac Catalyst | StoreKit 2 through an owned Swift bridge | Managed compilation; native Mac build and Store acceptance outstanding |
+| Mac Catalyst | StoreKit 2 through an owned Swift bridge | Unsigned arm64 Release build in CI; real Store testing outstanding |
+| iOS | StoreKit 2 through an owned Swift bridge | Managed compilation; native simulator CI and device/Store acceptance tracked separately |
 
 See [validation evidence](docs/VALIDATION.md) for exact checks. This preview supports permanent upgrades only; subscriptions and consumables are not implemented.
 

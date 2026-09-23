@@ -14,8 +14,8 @@ case "$rid" in
  *) echo "Unsupported Apple RID: $rid" >&2; exit 1 ;;
 esac
 sdkpath="$(xcrun --sdk "$sdk" --show-sdk-path)"
-extra=()
+args=(-swift-version 5 -parse-as-library -emit-library -static -module-name BrighterToolsBilling -target "$triple" -sdk "$sdkpath")
 if [[ "$rid" == maccatalyst-* ]]; then
- extra=(-F "$sdkpath/System/iOSSupport/System/Library/Frameworks" -I "$sdkpath/System/iOSSupport/usr/include")
+ args+=(-F "$sdkpath/System/iOSSupport/System/Library/Frameworks" -I "$sdkpath/System/iOSSupport/usr/include")
 fi
-xcrun --sdk "$sdk" swiftc -swift-version 5 -parse-as-library -emit-library -static -module-name BrighterToolsBilling -target "$triple" -sdk "$sdkpath" "${extra[@]}" "$src" -o "$out/libBrighterToolsBilling.a"
+xcrun --sdk "$sdk" swiftc "${args[@]}" "$src" -o "$out/libBrighterToolsBilling.a"
