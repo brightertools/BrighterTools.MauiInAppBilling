@@ -39,5 +39,5 @@ jobs:
           global-json-file: global.json
       # Runner Xcode must match the pinned .NET Apple workload. A mismatch is a failing release gate.
       - run: dotnet workload install maui --version 10.0.303.1
-      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-maccatalyst -p:RuntimeIdentifier=maccatalyst-arm64 -p:TargetFrameworks=net10.0-maccatalyst -p:EnableCodeSigning=false
-      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-ios -p:RuntimeIdentifier=iossimulator-arm64 -p:TargetFrameworks=net10.0-ios -p:EnableCodeSigning=false
+      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-maccatalyst -p:RuntimeIdentifier=maccatalyst-arm64 -p:EnableCodeSigning=false
+      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-ios -p:RuntimeIdentifier=iossimulator-arm64 -p:EnableCodeSigning=false
