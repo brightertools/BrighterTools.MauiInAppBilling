@@ -1,0 +1,31 @@
+# Build outputs and local tooling
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.nupkg
+*.snupkg
+*.log
+**/.DS_Store
+Thumbs.db
+
+# Signing, private configuration and Store evidence
+*.pfx
+*.p12
+*.p8
+*.pem
+*.cer
+*.mobileprovision
+*.provisionprofile
+*.keystore
+*.jks
+*.key
+.env
+.env.*
+!.env.example
+appsettings.Local.json

@@ -1,0 +1,43 @@
+name: Build and test
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - run: dotnet workload install maui --version 10.0.303.1
+      - run: dotnet test tests/Billing.Tests/Billing.Tests.csproj -c Release -p:RestoreLockedMode=true
+      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-windows10.0.19041.0 -p:RuntimeIdentifierOverride=win-x64
+      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-android
+      - run: pwsh eng/pack.ps1
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: local-packages
+          path: artifacts/packages/*
+          if-no-files-found: error
+  apple:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      # Runner Xcode must match the pinned .NET Apple workload. A mismatch is a failing release gate.
+      - run: dotnet workload install maui --version 10.0.303.1
+      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-maccatalyst -p:RuntimeIdentifier=maccatalyst-arm64 -p:TargetFrameworks=net10.0-maccatalyst -p:EnableCodeSigning=false
+      - run: dotnet build samples/BillingDemo/BillingDemo.csproj -c Release -f net10.0-ios -p:RuntimeIdentifier=iossimulator-arm64 -p:TargetFrameworks=net10.0-ios -p:EnableCodeSigning=false

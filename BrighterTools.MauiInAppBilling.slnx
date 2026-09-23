@@ -1,0 +1,5 @@
+<Solution>
+<Folder Name="/src/"><Project Path="src/BrighterTools.MauiInAppBilling.Abstractions/BrighterTools.MauiInAppBilling.Abstractions.csproj"/><Project Path="src/BrighterTools.MauiInAppBilling/BrighterTools.MauiInAppBilling.csproj"/></Folder>
+<Folder Name="/tests/"><Project Path="tests/Billing.Tests/Billing.Tests.csproj"/></Folder>
+<Folder Name="/samples/"><Project Path="samples/BillingDemo/BillingDemo.csproj"/></Folder>
+</Solution>

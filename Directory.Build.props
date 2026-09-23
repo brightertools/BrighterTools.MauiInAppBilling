@@ -1,0 +1,31 @@
+<Project>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Version>0.1.0-preview.1</Version>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <Authors>Brighter Tools Limited</Authors>
+    <Company>Brighter Tools Limited</Company>
+    <Copyright>Copyright (c) 2026 Brighter Tools Limited</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/brightertools/BrighterTools.MauiInAppBilling</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/brightertools/BrighterTools.MauiInAppBilling</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PackageTags>BrighterTools;MAUI;Billing;InAppPurchase;StoreKit;GooglePlay;Windows</PackageTags>
+    <PackageReleaseNotes>Initial MIT-licensed preview for permanent in-app upgrades. See CHANGELOG.md and docs/VALIDATION.md for scope and outstanding platform acceptance checks.</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)THIRD_PARTY_NOTICES.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

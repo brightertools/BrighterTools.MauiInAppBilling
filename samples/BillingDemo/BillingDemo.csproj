@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup>
+<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+<OutputType>Exe</OutputType><RootNamespace>BillingDemo</RootNamespace><UseMaui>true</UseMaui><SingleProject>true</SingleProject><MauiVersion>10.0.101</MauiVersion><IsPackable>false</IsPackable>
+<ApplicationTitle>Billing demo</ApplicationTitle><ApplicationId>com.brightertools.billingdemo</ApplicationId><ApplicationDisplayVersion>1.0</ApplicationDisplayVersion><ApplicationVersion>1</ApplicationVersion>
+<RuntimeIdentifier Condition="'$(RuntimeIdentifierOverride)' != '' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">$(RuntimeIdentifierOverride)</RuntimeIdentifier>
+<WindowsPackageType Condition="'$(WindowsPackageType)'==''">None</WindowsPackageType><AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))=='android'">23.0</SupportedOSPlatformVersion>
+<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))=='ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))=='maccatalyst'">15.0</SupportedOSPlatformVersion>
+<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))=='windows'">10.0.17763.0</SupportedOSPlatformVersion>
+<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))=='windows'">10.0.17763.0</TargetPlatformMinVersion>
+<CodesignEntitlements Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))=='maccatalyst'">Platforms/MacCatalyst/Entitlements.plist</CodesignEntitlements>
+<DefineConstants Condition="'$(DemoStoreBuild)'=='true'">$(DefineConstants);DEMO_STORE</DefineConstants>
+</PropertyGroup><ItemGroup>
+<ProjectReference Include="../../src/BrighterTools.MauiInAppBilling/BrighterTools.MauiInAppBilling.csproj" Condition="'$(UseBillingPackage)' != 'true'"/>
+<PackageReference Include="BrighterTools.MauiInAppBilling" Version="0.1.0-preview.1" Condition="'$(UseBillingPackage)' == 'true'"/>
+<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.101"/>
+<MauiIcon Include="Resources/AppIcon/appicon.svg"/>
+<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute"><_Parameter1>WindowsOfferToken</_Parameter1><_Parameter2>$(BillingWindowsOfferToken)</_Parameter2></AssemblyAttribute>
+<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute"><_Parameter1>AppleProductId</_Parameter1><_Parameter2>$(BillingAppleProductId)</_Parameter2></AssemblyAttribute>
+<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute"><_Parameter1>GoogleProductId</_Parameter1><_Parameter2>$(BillingGoogleProductId)</_Parameter2></AssemblyAttribute>
+<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute"><_Parameter1>GooglePublicKey</_Parameter1><_Parameter2>$(BillingGooglePublicKey)</_Parameter2></AssemblyAttribute>
+</ItemGroup><Import Project="../../buildTransitive/BrighterTools.MauiInAppBilling.targets" Condition="'$(UseBillingPackage)' != 'true'"/>
+</Project>

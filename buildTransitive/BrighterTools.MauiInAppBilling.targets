@@ -1,0 +1,15 @@
+<Project>
+  <!-- Source and package consumers use the same bridge. Build in the app's obj directory, never in the NuGet cache. -->
+  <PropertyGroup>
+    <BrighterToolsBillingNativeRoot Condition="'$(BrighterToolsBillingNativeRoot)' == ''">$(MSBuildThisFileDirectory)../native/AppleBilling</BrighterToolsBillingNativeRoot>
+  </PropertyGroup>
+  <Target Name="BuildBrighterToolsAppleBilling" BeforeTargets="_SanitizeNativeReferences;_ExpandNativeReferences"
+    Condition="$([MSBuild]::IsOSPlatform('osx')) and ('$(OutputType)' == 'Exe') and ('$(TargetPlatformIdentifier)' == 'ios' or '$(TargetPlatformIdentifier)' == 'maccatalyst') and '$(DesignTimeBuild)' != 'true'">
+    <Error Condition="'$(RuntimeIdentifier)' == ''" Text="Choose an Apple RuntimeIdentifier to build the StoreKit bridge."/>
+    <PropertyGroup><_BillingNativeOutput>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)billing-native'))</_BillingNativeOutput></PropertyGroup>
+    <Exec Command="bash &quot;$(BrighterToolsBillingNativeRoot)/build.sh&quot; &quot;$(RuntimeIdentifier)&quot; &quot;$(_BillingNativeOutput)&quot;"/>
+    <ItemGroup>
+      <NativeReference Include="$(_BillingNativeOutput)/libBrighterToolsBilling.a" Kind="Static" ForceLoad="true" SmartLink="false" Frameworks="StoreKit Foundation" LinkWithSwiftSystemLibraries="true"/>
+    </ItemGroup>
+  </Target>
+</Project>
