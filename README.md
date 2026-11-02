@@ -3,7 +3,7 @@
 [![Build and test](https://github.com/brightertools/BrighterTools.MauiInAppBilling/actions/workflows/ci.yml/badge.svg)](https://github.com/brightertools/BrighterTools.MauiInAppBilling/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Permanent in-app upgrades for .NET 10 / MAUI 10: Microsoft Store, App Store on iOS and Mac Catalyst, and Google Play.
+Permanent in-app upgrades for .NET 10 / MAUI 10: Microsoft Store, App Store on iOS and Mac Catalyst, and Google Play. An additive, server-delivered subscription API supports Apple auto-renewables and Google Play subscriptions; see [subscription integration](docs/SUBSCRIPTIONS.md).
 
 **Preview implementation.** Windows and Android managed adapters compile; the shared transaction coordinator has automated tests. Apple uses an owned Swift StoreKit 2 bridge, built from source on a Mac. Real Store purchases, remaining Apple build/signing checks and device acceptance must pass before a production NuGet release. NuGet packages have not been published.
 
@@ -14,7 +14,8 @@ Permanent in-app upgrades for .NET 10 / MAUI 10: Microsoft Store, App Store on i
 - Distinct cancelled, pending, unavailable, unverified and failed outcomes.
 - Verified entitlement cache in MAUI SecureStorage, serialized operations, durable delivery before finish/acknowledge, retry on refresh/startup and every minute while unfinished delivery remains.
 - Optional application-provided verification service.
-- No subscriptions, consumables, cross-store accounts, receipt server, pricing UI or MAUI Shell dependency.
+- Separate subscription products, base plans, correlation, purchase/restore/management and server-delivery coordinator. Subscription entitlements are never granted from the permanent-product cache.
+- No consumables, cross-store account merging, receipt server, pricing UI or MAUI Shell dependency.
 
 Package layout: `BrighterTools.MauiInAppBilling.Abstractions` contains portable contracts/coordinator/testing tools; `BrighterTools.MauiInAppBilling` provides the four platform adapters and DI registration. The latter selects platform dependencies by target framework; separate Desktop/Mobile packages are unnecessary for v1.
 

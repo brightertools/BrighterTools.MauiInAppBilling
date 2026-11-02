@@ -22,7 +22,7 @@ private enum BillingBridge {
             }
         }
     }
-    static func entitlements() async throws -> [[String: Any]] {
+    static func entitlements(subscriptions: Bool = false) async throws -> [[String: Any]] {
         var unfinished = Set<String>()
         for await result in Transaction.unfinished {
             if case .verified(let transaction) = result {
@@ -35,11 +35,12 @@ private enum BillingBridge {
         for await result in Transaction.currentEntitlements {
             switch result {
             case .verified(let transaction):
-                guard transaction.productType == .nonConsumable else { continue }
+                guard transaction.productType == (subscriptions ? .autoRenewable : .nonConsumable) else { continue }
                 let id = String(transaction.id)
                 transactions[id] = transaction
                 values.append(["product": transaction.productID, "transaction": id, "verified": true,
-                               "finish": unfinished.contains(id), "proof": result.jwsRepresentation])
+                               "finish": unfinished.contains(id), "proof": result.jwsRepresentation,
+                               "originalTransaction": String(transaction.originalID), "accountToken": transaction.appAccountToken?.uuidString ?? ""])
             case .unverified(let transaction, _):
                 values.append(["product": transaction.productID, "transaction": String(transaction.id),
                                "verified": false, "finish": false, "proof": result.jwsRepresentation])
@@ -52,6 +53,35 @@ private enum BillingBridge {
         do {
             let value = try JSONSerialization.jsonObject(with: Data(argument.utf8), options: [.fragmentsAllowed])
             switch operation {
+            case "subscription-products":
+                let products = try await Product.products(for: value as? [String] ?? [])
+                emit(id, ["products": products.filter { $0.type == .autoRenewable }.map {
+                    ["id": $0.id, "title": $0.displayName, "price": $0.displayPrice,
+                     "period": $0.subscription.map { "\($0.subscriptionPeriod.value) \($0.subscriptionPeriod.unit)" } ?? ""]
+                }], reply)
+            case "subscription-refresh", "subscription-restore":
+                if operation == "subscription-restore" { try await AppStore.sync() }
+                emit(id, ["purchases": try await entitlements(subscriptions: true)], reply)
+            case "subscription-purchase":
+                guard let request = value as? [String: Any], let productID = request["ProductId"] as? String,
+                      let account = request["AccountToken"] as? String, let accountToken = UUID(uuidString: account),
+                      let product = try await Product.products(for: [productID]).first,
+                      product.type == .autoRenewable else {
+                    emit(id, ["status": "Unavailable"], reply); return
+                }
+                switch try await product.purchase(options: [.appAccountToken(accountToken)]) {
+                case .success(let result):
+                    switch result {
+                    case .verified(let transaction):
+                        transactions[String(transaction.id)] = transaction
+                        emit(id, ["status": "Purchased"], reply)
+                    case .unverified:
+                        emit(id, ["status": "Unverified", "message": "The App Store transaction could not be verified."], reply)
+                    }
+                case .pending: emit(id, ["status": "Pending"], reply)
+                case .userCancelled: emit(id, ["status": "Cancelled"], reply)
+                @unknown default: emit(id, ["status": "Failed"], reply)
+                }
             case "products":
                 let products = try await Product.products(for: value as? [String] ?? [])
                 emit(id, ["products": products.filter { $0.type == .nonConsumable }.map {

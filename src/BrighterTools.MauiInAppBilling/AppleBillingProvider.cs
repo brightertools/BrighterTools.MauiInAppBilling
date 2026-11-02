@@ -10,7 +10,7 @@ internal sealed class AppleBillingProvider : IStoreBillingProvider
     private static readonly Reply callback = Receive;
     private static long nextId;
     private static readonly ConcurrentDictionary<long, TaskCompletionSource<string>> waiting = new();
-    private static event EventHandler? NativeChanged;
+    internal static event EventHandler? NativeChanged;
     public string StoreName => "AppStore";
     public event EventHandler? PurchasesChanged;
     public AppleBillingProvider() => NativeChanged += Changed;
@@ -25,7 +25,7 @@ internal sealed class AppleBillingProvider : IStoreBillingProvider
         if (id == 0) { NativeChanged?.Invoke(null, EventArgs.Empty); return; }
         if (waiting.TryRemove(id, out var completion)) completion.TrySetResult(text);
     }
-    private static async Task<JsonElement> Call(string operation, object argument, CancellationToken token)
+    internal static async Task<JsonElement> Call(string operation, object argument, CancellationToken token)
     {
         long id = Interlocked.Increment(ref nextId);
         var completion = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -72,11 +72,13 @@ internal sealed class AppleBillingProvider : IStoreBillingProvider
     private static string SerializeArgument(object value) => value switch {
         string text => JsonSerializer.Serialize(text, AppleBillingJson.Default.String),
         string[] items => JsonSerializer.Serialize(items, AppleBillingJson.Default.StringArray),
+        SubscriptionPurchaseRequest request => JsonSerializer.Serialize(request, AppleBillingJson.Default.SubscriptionPurchaseRequest),
         _ => throw new ArgumentException("Unsupported native billing argument.")
     };
     public void Dispose() => NativeChanged -= Changed;
 }
 [JsonSerializable(typeof(string))]
 [JsonSerializable(typeof(string[]))]
+[JsonSerializable(typeof(SubscriptionPurchaseRequest))]
 internal partial class AppleBillingJson : JsonSerializerContext { }
 #endif
